@@ -1,0 +1,78 @@
+name: Github Actions
+
+on:
+  push:
+    branches: [ develop ]
+  pull_request:
+    branches: [ develop ]
+
+jobs:
+  build-job: 
+    timeout-minutes: 10
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [lts, 20, 18]
+    container:
+      image: node:${{ matrix.node-version }}
+      options: --user root
+      volumes:
+        - .:/app
+    services:
+      database:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: "password"
+          MYSQL_ROOT_HOST: "%"
+          MYSQL_DATABASE: "webrtc"
+          MYSQL_USER: "docker"
+          MYSQL_PASSWORD: "password"
+          MYSQL_ALLOW_EMPTY_PASSWORD: 1
+          SERVICE_TAGS: dev
+          SERVICE_NAME: mysql
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Install packages
+        run: npm ci --unsafe-perm=true --allow-root
+
+      - name: Audit npm signatures
+        run: npm audit signatures
+
+      - name: Run all test jest
+        run: npm run test
+
+      - name: Run server
+        run: NODE_ENV=testing node --require ts-node/register src/index.ts
+
+  deploy-job:
+    timeout-minutes: 10
+    needs: build-job
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
+
+    steps:
+      - name: Executing remote ssh commands using ssh key and checkout source
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.SSH_ROOT_DIR }}
+            git pull
+          script_stop: true
+
+      - name: Build and restart service
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ${{ secrets.SSH_ROOT_DIR }}
+            npm run build
+            pm2 restart node
+          script_stop: true

@@ -1,0 +1,52 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: ${APP_NAME:-webrtc}_database
+    restart: unless-stopped
+    tty: true
+    ports:
+      - '${FORWARD_DB_PORT:-3306}:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: '${DB_DATABASE}'
+      MYSQL_USER: '${DB_USERNAME}'
+      MYSQL_PASSWORD: '${DB_PASSWORD}'
+      MYSQL_ALLOW_EMPTY_PASSWORD: 1
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - ./docker/mysql/data:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+      - ./docker/mysql/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-p${DB_PASSWORD}"]
+      retries: 3
+      timeout: 5s
+    networks:
+      - webrtc-network
+
+  nodejs:
+    container_name: ${APP_NAME:-webrtc}_app
+    build:
+      context: .
+      dockerfile: docker/node/Dockerfile
+      args:
+      - EXPOSE_PORT=$APP_PORT
+    user: "1000:1000"
+    command: "bash ./scripts/start.sh"
+    ports:
+      - '${APP_PORT:-3000}:${APP_PORT}'
+      - '${APP_DEBUG_PORT:-9229}:9229'
+    volumes:
+      - .:/app
+    depends_on:
+      - mysql
+    restart: unless-stopped
+    networks:
+      - webrtc-network
+
+networks:
+  webrtc-network:
+    driver: bridge
