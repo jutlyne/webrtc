@@ -7,8 +7,9 @@ import { AppError } from '@/shared/utils/errror.util';
 import { trans } from '@/shared/utils/translation.util';
 import { HttpStatusCode } from 'axios';
 import { compareHash } from '@/shared/utils/encryption.util';
+import { IUserService } from './user';
 
-export class UserService extends BaseService<User> {
+export class UserService extends BaseService<User> implements IUserService {
 	constructor() {
 		const userRepository = DataSource.getRepository(User);
 		super(userRepository, UserDto);

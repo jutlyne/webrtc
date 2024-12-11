@@ -1,15 +1,19 @@
 import { NextFunction, Request, Response } from 'express';
 import BaseController from '@/shared/controllers/base.controller';
-import { UserService } from '@/users/services/user.service';
 import { ControllerDecorator } from '@/shared/decorators/controller.decorator';
 import { UserPayload } from '@/users/interfaces/user.interface';
 import { isTrueSet } from '@/shared/utils/string.util';
 import { getExpiresIn, sign } from '@/shared/utils/jwt.util';
 import { apiSuccess } from '@/shared/utils/response.util';
 import { trans } from '@/shared/utils/translation.util';
+import { IAuthController } from './auth';
+import { IUserService } from '@/users/services/user';
 
-export default class AuthController extends BaseController<UserService> {
-	public constructor(service: UserService) {
+export default class AuthController
+	extends BaseController<IUserService>
+	implements IAuthController
+{
+	public constructor(service: IUserService) {
 		super(service);
 	}
 
