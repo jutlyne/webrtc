@@ -60,5 +60,9 @@ export default {
 		pass: process.env.MAIL_PASS ?? '3ea2d77ecdeddd',
 		from: process.env.MAIL_FROM ?? 'doanvanvandvv@gmail.com',
 	},
+	redis: {
+		host: process.env.REDIS_HOST ?? 'localhost',
+		port: Number(process.env.REDIS_PORT) || 6379,
+	},
 	url_frontend: process.env.URL_FRONT ?? 'http://localhost:3000/',
 };
