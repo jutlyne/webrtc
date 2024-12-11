@@ -1,10 +1,10 @@
 import jwt from 'jsonwebtoken';
 import { Request, Response, NextFunction } from 'express';
-import { env } from '@/configs';
-import { AppError } from '@/utils/errror.util';
-import { trans } from '@/utils/translation.util';
+import { env } from '@shared/configs';
+import { AppError } from '@utils/errror.util';
+import { trans } from '@utils/translation.util';
 import { HttpStatusCode } from 'axios';
-import { AuthorizationType } from '@/constants/common.constant';
+import { AuthorizationType } from '@/shared/constants/common.constant';
 
 const { scret } = env.jwt;
 

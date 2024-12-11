@@ -2,7 +2,7 @@ import path from 'path';
 import i18next from 'i18next';
 import Backend from 'i18next-fs-backend';
 import { LanguageDetector } from 'i18next-http-middleware';
-import { AcceptLanguage } from '@/constants/common.constant';
+import { AcceptLanguage } from '@/shared/constants/common.constant';
 
 const preloadLanguage: string[] = Object.values(AcceptLanguage);
 
@@ -12,7 +12,10 @@ i18next
 	.init({
 		fallbackLng: 'vi',
 		backend: {
-			loadPath: path.join(__dirname, '../locales/{{lng}}/{{ns}}.json'),
+			loadPath: path.join(
+				__dirname,
+				'../shared/locales/{{lng}}/{{ns}}.json',
+			),
 		},
 		detection: {
 			order: ['querystring', 'cookie'],

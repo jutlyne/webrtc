@@ -183,7 +183,9 @@
       // Xử lý lấy ra remote id
       socket.on('list-users', (users) => {
         const remoteUser = users.find((user) => user !== userId);
-        remoteUser ? remoteVideo.setAttribute('data-id', remoteUser) : '';
+        if (remoteUser) {
+          remoteVideo.setAttribute('data-id', remoteUser)
+        }
       });
 
       async function createPeerConnection(userId = undefined) {
@@ -202,7 +204,10 @@
         // Khi nhận remote stream
         peerConnection.ontrack = (event) => {
           remoteVideo.srcObject = event.streams[0];
-          userId ? remoteVideo.setAttribute('data-id', userId) : '';
+          if (userId) {
+            remoteVideo.setAttribute('data-id', userId)
+          }
+
           remoteVideo.classList.remove('d-none');
         };
 

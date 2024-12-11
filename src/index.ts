@@ -6,20 +6,20 @@ import { Server as SocketIOServer } from 'socket.io';
 import { createServer, Server as HttpServer } from 'http';
 import { handle as i18Handle } from 'i18next-http-middleware';
 import express, { Application, NextFunction, Request, Response } from 'express';
-import routes from './routes';
-// import databaseLoader from './database';
-import { trans } from './utils/translation.util';
-import formatResponse from './loaders/response.loader';
-import ErrorHandler from './exceptions/error.exeption';
-import LanguageMiddleware from './middleware/language.middleware';
-import { verifyServerHealth } from './utils/response.util';
+import routes from '@shared/routes';
+import databaseLoader from './database';
+import { trans } from '@utils/translation.util';
+import formatResponse from '@loaders/response.loader';
+import ErrorHandler from '@exceptions/error.exeption';
+import LanguageMiddleware from '@middleware/language.middleware';
+import { verifyServerHealth } from '@utils/response.util';
 import {
 	corsOptions,
 	env,
 	header,
 	i18nConfig,
 	setupSocketServer,
-} from './configs';
+} from '@shared/configs';
 
 class Server {
 	public app: Application;
@@ -93,7 +93,7 @@ class Server {
 
 	public async start(): Promise<void> {
 		try {
-			// await databaseLoader.connectToDatabase();
+			await databaseLoader.connectToDatabase();
 			this.server.listen(this.app.get('port'), async () => {
 				const { port } = this.server.address() as AddressInfo;
 				console.log(`Server listening on port ${port}`);

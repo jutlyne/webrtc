@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { description, name, version } from '../../package.json';
+import { description, name, version } from '../../../package.json';
 
 const envFile =
 	process.env.NODE_ENV && ['testing'].includes(process.env.NODE_ENV)
@@ -59,6 +59,10 @@ export default {
 		user: process.env.MAIL_USER ?? '9a3218f650afa3',
 		pass: process.env.MAIL_PASS ?? '3ea2d77ecdeddd',
 		from: process.env.MAIL_FROM ?? 'doanvanvandvv@gmail.com',
+	},
+	redis: {
+		host: process.env.REDIS_HOST ?? 'localhost',
+		port: Number(process.env.REDIS_PORT) || 6379,
 	},
 	url_frontend: process.env.URL_FRONT ?? 'http://localhost:3000/',
 };

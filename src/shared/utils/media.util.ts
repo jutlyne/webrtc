@@ -1,7 +1,7 @@
 import path from 'path';
 import multer, { Multer } from 'multer';
 import { Request, Express } from 'express';
-import { Image } from '@/constants/common.constant';
+import { Image } from '@/shared/constants/common.constant';
 import { trans } from '@/utils/translation.util';
 
 const MAXSIZE = Image.MAXSIZE;
