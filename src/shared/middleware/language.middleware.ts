@@ -1,7 +1,7 @@
 import { CallbackError } from 'i18next';
 import { i18nConfig, logger } from '../configs';
 import { NextFunction, Request, Response } from 'express';
-import { AcceptLanguage } from '@/constants/common.constant';
+import { AcceptLanguage } from '@/shared/constants/common.constant';
 
 class LanguageMiddleware {
 	static async handle(req: Request, res: Response, next: NextFunction) {

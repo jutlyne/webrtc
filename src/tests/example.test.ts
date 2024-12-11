@@ -1,4 +1,4 @@
-import { AcceptLanguage } from '../constants/common.constant';
+import { AcceptLanguage } from '../shared/constants/common.constant';
 
 describe('User Model', () => {
 	it('Check vietnamese language', () => {

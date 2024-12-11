@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { logger } from '../configs';
+import { logger } from '@shared/configs';
 import MainDataSource from './datasource';
 import { DataSource } from 'typeorm';
 

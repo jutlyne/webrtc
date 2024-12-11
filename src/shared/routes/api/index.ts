@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import AuthRoutes from '@/auth/routes/auth.routes';
 
 class ApiRoutes {
 	public router: Router;
@@ -8,7 +9,9 @@ class ApiRoutes {
 		this.registerRoutes();
 	}
 
-	protected registerRoutes(): void {}
+	protected registerRoutes(): void {
+		this.router.use('/auth', AuthRoutes.router);
+	}
 }
 
 export default new ApiRoutes();

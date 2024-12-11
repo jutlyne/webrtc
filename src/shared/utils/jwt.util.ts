@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { env } from '@/configs';
+import { env } from '../configs';
 
 const { expires_in, scret } = env.jwt;
 

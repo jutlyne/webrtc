@@ -14,7 +14,7 @@ class ErrorHandler {
 		next: NextFunction,
 	) {
 		const responseData = {
-			code: error.statusCode || HttpStatusCode.InternalServerError,
+			code: error.statusCode ?? HttpStatusCode.InternalServerError,
 			message: error.message || 'Internal Server Error',
 		};
 		let stack: any = env.app.node_env === 'production' ? '' : error.stack;

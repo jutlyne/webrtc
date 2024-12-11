@@ -1,7 +1,7 @@
 const ncp = require('ncp').ncp;
 
-const sourceDir = 'src/locales';
-const destDir = 'dist/src/locales';
+const sourceDir = 'src/shared/locales';
+const destDir = 'dist/src/shared/locales';
 
 ncp(sourceDir, destDir, function (err) {
 	if (err) {

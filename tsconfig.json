@@ -28,13 +28,18 @@
 		"skipLibCheck": true,
 		"paths": {
 			"@/*": ["src/*"],
-			"@controllers/*": ["src/controllers/*"],
-			"@services/*": ["src/services/*"],
-			"@entities/*": ["src/entities/*"],
-			"@interfaces/*": ["src/interfaces/*"],
-			"@validators/*": ["src/validators/*"],
-			"@utils/*": ["src/utils/*"],
-			"@constants/*": ["src/constants/*"]
+			"@shared/*": ["src/shared/*"],
+			"@controllers/*": ["src/shared/controllers/*"],
+			"@services/*": ["src/shared/services/*"],
+			"@entities/*": ["src/shared/entities/*"],
+			"@interfaces/*": ["src/shared/interfaces/*"],
+			"@validators/*": ["src/shared/validators/*"],
+			"@utils/*": ["src/shared/utils/*"],
+			"@constants/*": ["src/shared/constants/*"],
+			"@middleware/*": ["src/shared/middleware/*"],
+			"@exceptions/*": ["src/shared/exceptions/*"],
+			"@loaders/*": ["src/shared/loaders/*"],
+			"@routes/*": ["src/shared/routes/*"]
 		}
 	},
 	"ts-node": {

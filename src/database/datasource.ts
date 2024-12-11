@@ -1,5 +1,5 @@
 import path from 'path';
-import { env } from '../configs';
+import { env } from '@shared/configs';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
 const config = env.database;
@@ -16,7 +16,7 @@ export default new DataSource({
 	extra: {
 		insecureAuth: true,
 	},
-	entities: [path.join(__dirname, '../entities/*.{ts,js}')],
+	entities: [path.join(__dirname, '../**/entities/*.entity.{ts,js}')],
 	migrations: [path.join(__dirname, '../database/migrations/*.{ts,js}')],
 	seeds: ['src/database/seeders/*{.ts,.js}'],
 	seedTracking: false,

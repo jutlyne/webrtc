@@ -18,7 +18,8 @@ if (type == 'migration') {
 }
 
 if (type == 'entity') {
-	const entityPath = `src/entities/${name}`;
+	const entityName = name.endsWith('s') ? name : `${name}s`;
+	const entityPath = `src/${entityName.toLowerCase()}/entities/${name.toLowerCase()}.entity`;
 	execSync(`typeorm entity:create ${entityPath}`, { stdio: 'inherit' });
 }
 

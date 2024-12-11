@@ -1,18 +1,20 @@
-import { Server } from 'socket.io';
-import { Server as HttpServer } from 'http';
-import { corsOptions } from './cors.config';
-import { setSocketServer } from '@/utils/socket.util';
-import Redis from 'ioredis';
-import { createAdapter } from '@socket.io/redis-adapter';
+import { Server as SocketIOServer } from 'socket.io';
 
-const setupSocketServer = (httpServer: HttpServer): Server => {
-	const pubClient = new Redis();
-	const subClient = pubClient.duplicate();
+let io: SocketIOServer;
 
-	const io = new Server(httpServer, {
-		cors: corsOptions,
-		adapter: createAdapter(pubClient, subClient),
-	});
+export const setSocketServer = (ioInstance: SocketIOServer) => {
+	io = ioInstance;
+};
+
+export const getSocketServer = (): SocketIOServer => {
+	if (!io) {
+		throw new Error('Socket.IO server is not initialized!');
+	}
+	return io;
+};
+
+export const handleEventWebRtc = () => {
+	const io = getSocketServer();
 
 	io.on('connection', (socket) => {
 		console.log(socket.id);
@@ -61,16 +63,4 @@ const setupSocketServer = (httpServer: HttpServer): Server => {
 			console.error('Socket connection error:', err);
 		});
 	});
-
-	setSocketServer(io);
-
-	io.use((socket, next) => {
-		const token = socket.handshake.auth?.token;
-		console.log(token);
-		// TODO verify jwt token
-	});
-
-	return io;
 };
-
-export default setupSocketServer;

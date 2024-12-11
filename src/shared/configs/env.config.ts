@@ -1,6 +1,6 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
-import { description, name, version } from '../../package.json';
+import { description, name, version } from '../../../package.json';
 
 const envFile =
 	process.env.NODE_ENV && ['testing'].includes(process.env.NODE_ENV)
