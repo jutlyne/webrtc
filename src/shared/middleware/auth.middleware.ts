@@ -5,8 +5,9 @@ import { AppError } from '@utils/errror.util';
 import { trans } from '@utils/translation.util';
 import { HttpStatusCode } from 'axios';
 import { AuthorizationType } from '@/shared/constants/common.constant';
+import { AuthPayload } from '@/auth/interfaces/auth.interface';
 
-const { scret } = env.jwt;
+const { secret } = env.jwt;
 
 export const authMiddleware = (
 	req: Request,
@@ -25,7 +26,7 @@ export const authMiddleware = (
 		);
 	}
 	try {
-		const decodedToken = jwt.verify(token, scret) as any;
+		const decodedToken = jwt.verify(token, secret) as AuthPayload;
 
 		if (isUnauthorizedPath(decodedToken.authorization_type, req.path)) {
 			throw new AppError(

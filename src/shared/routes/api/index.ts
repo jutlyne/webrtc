@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import AuthRoutes from '@/auth/routes/auth.routes';
+import AuthRoute from '@/auth/routes/auth.route';
 
-class ApiRoutes {
+class ApiRoute {
 	public router: Router;
 
 	constructor() {
@@ -10,8 +10,8 @@ class ApiRoutes {
 	}
 
 	protected registerRoutes(): void {
-		this.router.use('/auth', AuthRoutes.router);
+		this.router.use('/auth', AuthRoute.router);
 	}
 }
 
-export default new ApiRoutes();
+export default new ApiRoute();

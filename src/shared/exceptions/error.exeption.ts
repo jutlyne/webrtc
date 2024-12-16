@@ -1,6 +1,6 @@
 import { HttpStatusCode } from 'axios';
 import { Request, Response, NextFunction } from 'express';
-import { env } from '../configs';
+import { env, logger } from '../configs';
 
 interface ErrorInterface extends Error {
 	statusCode?: number;
@@ -13,10 +13,17 @@ class ErrorHandler {
 		res: Response,
 		next: NextFunction,
 	) {
+		const statusCode =
+			error.statusCode ?? HttpStatusCode.InternalServerError;
 		const responseData = {
-			code: error.statusCode ?? HttpStatusCode.InternalServerError,
+			code: statusCode,
 			message: error.message || 'Internal Server Error',
 		};
+
+		if (statusCode === HttpStatusCode.InternalServerError) {
+			logger.error(error);
+		}
+
 		let stack: any = env.app.node_env === 'production' ? '' : error.stack;
 		if (env.app.node_env !== 'production') {
 			if (stack) {

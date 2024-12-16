@@ -50,8 +50,10 @@ export default {
 		isSync: process.env.DB_SYNC === 'true',
 	},
 	jwt: {
-		scret: process.env.JWT_SCRET ?? 'scret',
-		expires_in: Number(process.env.JWT_EXPIRES_IN) || 1, // 1 days
+		secret: process.env.JWT_SCRET ?? 'secret',
+		expires_in: Number(process.env.JWT_EXPIRES_IN) || 1, // 1 day
+		refresh_secret: process.env.JWT_REFRESH_SECRET ?? 'refresh_secret',
+		refresh_expires_in: process.env.JWT_REFRESH_EXPIRES_IN ?? '30d', // 30 days
 	},
 	mail: {
 		host: process.env.MAIL_HOST ?? 'sandbox.smtp.mailtrap.io',
@@ -65,4 +67,5 @@ export default {
 		port: Number(process.env.REDIS_PORT) || 6379,
 	},
 	url_frontend: process.env.URL_FRONT ?? 'http://localhost:3000/',
+	timezone: process.env.TIMEZONE ?? 'UTC',
 };
