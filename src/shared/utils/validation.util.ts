@@ -53,6 +53,7 @@ export function validateBody<T>(
 			if (req.method == 'POST' || req.method == 'PUT') {
 				dataToValidate = req.body;
 			}
+
 			const { error } = rules.validate(dataToValidate, {
 				messages,
 				abortEarly: true,

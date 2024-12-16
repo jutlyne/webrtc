@@ -15,11 +15,7 @@ export class UserService extends BaseService<User> implements IUserService {
 		super(userRepository, UserDto);
 	}
 
-	public async login(
-		email: string,
-		password: string,
-		expiresIn: number,
-	): Promise<UserPayload> {
+	public async login(email: string, password: string): Promise<UserPayload> {
 		const user = await this.findOne({ email });
 
 		if (!user) {
@@ -50,7 +46,6 @@ export class UserService extends BaseService<User> implements IUserService {
 			email: user.email,
 			username: user.username,
 			avatar: user.avatar,
-			expires: expiresIn,
 		};
 	}
 }
