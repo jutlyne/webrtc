@@ -18,6 +18,7 @@ import {
 	env,
 	header,
 	i18nConfig,
+	logger,
 	setupSocketServer,
 } from '@shared/configs';
 
@@ -103,10 +104,8 @@ class Server {
 				}
 			});
 		} catch (error) {
-			console.error(error);
-			if (env.app.node_env === 'testing') {
-				process.exit(1);
-			}
+			logger.error(error);
+			process.exit(1);
 		}
 	}
 }
