@@ -43,3 +43,5 @@ URL_FRONT=
 4. docker compose up -d
 5. docker exec -it webrtc_app bash
 6. npm install
+
+![entity-relationship-diagram](https://raw.githubusercontent.com/jutlyne/webrtc/refs/heads/feature/entity-relationship-diagram.iuml)
