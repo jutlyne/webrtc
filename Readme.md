@@ -44,4 +44,4 @@ URL_FRONT=
 5. docker exec -it webrtc_app bash
 6. npm install
 
-![entity-relationship-diagram](https://raw.githubusercontent.com/jutlyne/webrtc/refs/heads/feature/entity-relationship-diagram.iuml)
+![your-UML-diagram-nameentity-relationship-diagram](http://www.plantuml.com/plantuml/proxy?cache=no&src=https://raw.githubusercontent.com/jutlyne/webrtc/refs/heads/feature/entity-relationship-diagram.iuml)
