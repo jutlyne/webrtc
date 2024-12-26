@@ -29,5 +29,5 @@ export class User extends BaseEntities implements UserAttributes {
 
 	@OneToMany(() => Blog, (blog) => blog.user, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'user_id' })
-	blogs!: Blog[];
+	blogs?: Blog[];
 }

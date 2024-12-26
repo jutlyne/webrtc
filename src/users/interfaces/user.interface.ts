@@ -1,3 +1,4 @@
+import { Blog } from '@/blogs/entities/blog.entity';
 import { JwtPayload } from 'jsonwebtoken';
 
 export interface UserAttributes {
@@ -10,6 +11,7 @@ export interface UserAttributes {
 	created_at: Date;
 	updated_at: Date;
 	deleted_at?: Date;
+	blogs?: Blog[];
 }
 
 export interface AuthAttributes {
