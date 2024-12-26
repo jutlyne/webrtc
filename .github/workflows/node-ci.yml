@@ -48,6 +48,12 @@ jobs:
       - name: Audit npm signatures
         run: npm audit signatures
 
+      - name: Run migration
+        run: npm run migration:run
+      
+      - name: Run seeder
+        run: npm run seed:run
+
       - name: Run all test jest
         run: npm run test
 
