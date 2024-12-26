@@ -10,7 +10,7 @@ export class UserSeeder1733888075379 implements Seeder {
 		factoryManager: SeederFactoryManager,
 	): Promise<any> {
 		const repository = dataSource.getRepository(User);
-		repository.clear();
+		await repository.delete({});
 		await repository.insert([
 			{
 				username: 'jutlyne',
