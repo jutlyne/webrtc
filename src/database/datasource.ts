@@ -27,6 +27,7 @@ export default new DataSource({
 		},
 		alwaysEnabled: true,
 		duration: 2000,
+		ignoreErrors: true,
 	},
 	entities: [path.join(__dirname, '../**/entities/*.entity.{ts,js}')],
 	migrations: [path.join(__dirname, '../database/migrations/*.{ts,js}')],
