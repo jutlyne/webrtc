@@ -1,6 +1,6 @@
 import { Blog } from '@/blogs/entities/blog.entity';
 import { BaseEntities } from '@/shared/entities/base.entity';
-import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany } from 'typeorm';
 import { BlogAnchorAttributes } from '../interfaces/blog-anchor.interface';
 
 @Entity('blog_anchors')
@@ -20,4 +20,13 @@ export class BlogAnchor extends BaseEntities implements BlogAnchorAttributes {
 	@ManyToOne(() => Blog, (blog) => blog.id, { onDelete: 'CASCADE' })
 	@JoinColumn({ name: 'blog_id' })
 	blog!: Blog;
+
+	@ManyToOne(() => BlogAnchor, (anchor) => anchor.children, {
+		onDelete: 'CASCADE',
+	})
+	@JoinColumn({ name: 'parent_id' })
+	parent?: BlogAnchor;
+
+	@OneToMany(() => BlogAnchor, (anchor) => anchor.parent)
+	children?: BlogAnchor[];
 }

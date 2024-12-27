@@ -14,7 +14,7 @@ class AuthController
 	extends BaseController<IUserService>
 	implements IAuthController
 {
-	public constructor() {
+	constructor() {
 		super(new UserService());
 	}
 

@@ -8,4 +8,8 @@ export enum AuthorizationType {
 	User = 2,
 }
 
+export enum Image {
+	MAXSIZE = 5000000,
+}
+
 export const categories = ['PHP', 'NodeJs', 'VueJs', 'AWS', 'CICD', 'Life'];

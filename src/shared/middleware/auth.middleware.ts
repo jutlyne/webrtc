@@ -4,7 +4,6 @@ import { env } from '@shared/configs';
 import { AppError } from '@utils/errror.util';
 import { trans } from '@utils/translation.util';
 import { HttpStatusCode } from 'axios';
-import { AuthorizationType } from '@/shared/constants/common.constant';
 import { AuthPayload } from '@/auth/interfaces/auth.interface';
 
 const { secret } = env.jwt;
@@ -14,7 +13,7 @@ export const authMiddleware = (
 	res: Response,
 	next: NextFunction,
 ) => {
-	if (isUnauthenticatePath(req.path)) {
+	if (isUnauthenticatePath(req.path) || isPublicPath(req.path, req.method)) {
 		return next();
 	}
 
@@ -27,13 +26,6 @@ export const authMiddleware = (
 	}
 	try {
 		const decodedToken = jwt.verify(token, secret) as AuthPayload;
-
-		if (isUnauthorizedPath(decodedToken.authorization_type, req.path)) {
-			throw new AppError(
-				trans('auth.unauthorized', {}, 'errors'),
-				HttpStatusCode.Unauthorized,
-			);
-		}
 		res.locals.user = decodedToken;
 		next();
 	} catch (error) {
@@ -41,28 +33,18 @@ export const authMiddleware = (
 	}
 };
 
-const isUnauthorizedPath = (
-	authorizationType: number,
-	path: string,
-): boolean => {
-	return (
-		(authorizationType !== AuthorizationType.Admin &&
-			path.startsWith('/admin')) ||
-		(authorizationType !== AuthorizationType.User &&
-			path.startsWith('/user'))
-	);
-};
-
 const isUnauthenticatePath = (path: string): boolean => {
-	const privateRoutePrefixes = ['/admin', '/user'];
-	const authRoutePrefixes = ['/admin/auth', '/user/auth'];
-
-	const isPathPrivate = privateRoutePrefixes.some((prefix) =>
-		path.startsWith(prefix),
-	);
+	const authRoutePrefixes = ['/auth'];
 	const isPathInvalidForAuth = authRoutePrefixes.some((prefix) =>
 		path.startsWith(prefix),
 	);
 
-	return !isPathPrivate || isPathInvalidForAuth;
+	return isPathInvalidForAuth;
+};
+
+const isPublicPath = (path: string, method: string): boolean => {
+	return (
+		method == 'GET' &&
+		['/blog', '/category'].some((prefix) => path.startsWith(prefix))
+	);
 };
