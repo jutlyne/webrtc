@@ -1,10 +1,11 @@
 import path from 'path';
 import { env } from '@shared/configs';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import { redis } from '@/shared/configs/redis.config';
+import connectRedisServer from '@/shared/configs/redis.config';
 
 const config = env.database;
-console.log(env.redis.host, env.redis.port);
+
+const { pubClient } = connectRedisServer();
 
 export default new DataSource({
 	type: config.dialect,
@@ -20,7 +21,7 @@ export default new DataSource({
 	},
 	cache: {
 		type: 'ioredis',
-		options: redis,
+		options: pubClient,
 		alwaysEnabled: true,
 		duration: 2000,
 		ignoreErrors: true,

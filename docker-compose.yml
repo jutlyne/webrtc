@@ -46,6 +46,19 @@ services:
     restart: unless-stopped
     networks:
       - webrtc-network
+  
+  redis:
+    container_name: ${APP_NAME:-webrtc}_redis
+    image: redis
+    ports:
+      - '${FORWARD_REDIS_PORT:-6379}:6379'
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - webrtc-network
 
 networks:
   webrtc-network:
