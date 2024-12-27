@@ -1,10 +1,10 @@
-import { Blog } from '@/blogs/entities/blog.entity';
+import { BlogDto } from '@/blogs/dtos/blog.dto';
 
 export interface CategoryAttributes {
 	name: string;
 	slug: string;
 	description?: string;
-	blogs?: Blog[];
+	blogs?: BlogDto[];
 	created_at: Date;
 	updated_at: Date;
 	deleted_at?: Date;

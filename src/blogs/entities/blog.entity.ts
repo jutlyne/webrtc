@@ -12,13 +12,29 @@ import {
 	OneToMany,
 } from 'typeorm';
 import { BlogAttributes } from '../interfaces/blog.interface';
+import _ from 'lodash';
 
 @Entity('blogs')
 export class Blog extends BaseEntities implements BlogAttributes {
+	@Column({ type: 'int', nullable: false })
+	user_id!: number;
+
 	@Column({ type: 'varchar', length: 255, nullable: false })
 	title!: string;
 
-	@Column({ type: 'varchar', length: 255, nullable: false })
+	@Column({
+		type: 'varchar',
+		length: 255,
+		nullable: false,
+		transformer: {
+			to: function (value: string) {
+				return _.kebabCase(value);
+			},
+			from: function (value: string) {
+				return value;
+			},
+		},
+	})
 	slug!: string;
 
 	@Column({ type: 'varchar', length: 255, nullable: false })
@@ -45,7 +61,7 @@ export class Blog extends BaseEntities implements BlogAttributes {
 
 	@OneToMany(() => BlogAnchor, (blogAnchor) => blogAnchor.blog)
 	@JoinColumn({ name: 'blog_id' })
-	blog_anchors!: BlogAnchor[];
+	anchors!: BlogAnchor[];
 
 	@ManyToMany(() => Category)
 	@JoinTable({

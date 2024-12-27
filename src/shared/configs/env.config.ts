@@ -11,8 +11,6 @@ dotenv.config({
 	path: path.join(process.cwd(), envFile),
 });
 
-console.log(path.join(process.cwd(), envFile));
-
 /**
  * Environment variables
  */
