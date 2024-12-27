@@ -3,6 +3,7 @@ import { env } from '@shared/configs';
 import { DataSource, DataSourceOptions } from 'typeorm';
 
 const config = env.database;
+console.log(env.redis.host, env.redis.port);
 
 export default new DataSource({
 	type: config.dialect,
