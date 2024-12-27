@@ -1,6 +1,7 @@
 import path from 'path';
 import { env } from '@shared/configs';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import { redis } from '@/shared/configs/redis.config';
 
 const config = env.database;
 console.log(env.redis.host, env.redis.port);
@@ -19,13 +20,7 @@ export default new DataSource({
 	},
 	cache: {
 		type: 'ioredis',
-		options: {
-			socket: {
-				host: env.redis.host,
-				port: env.redis.port,
-			},
-			keyPrefix: 'cache:',
-		},
+		options: redis,
 		alwaysEnabled: true,
 		duration: 2000,
 		ignoreErrors: true,
