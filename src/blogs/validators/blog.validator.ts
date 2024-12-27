@@ -51,6 +51,12 @@ export const createBlogSchema =
 								.max(255)
 								.required()
 								.label('Anchor Title'),
+							href: Joi.string()
+								.pattern(/^#[a-zA-Z0-9_-]+$/, {
+									name: 'slug starting with #',
+								})
+								.required()
+								.label('Anchor Href'),
 							children: Joi.array()
 								.items(
 									Joi.object({
@@ -58,6 +64,12 @@ export const createBlogSchema =
 											.max(255)
 											.required()
 											.label('Child Title'),
+										href: Joi.string()
+											.pattern(/^#[a-zA-Z0-9_-]+$/, {
+												name: 'slug starting with #',
+											})
+											.required()
+											.label('Anchor Href'),
 									}),
 								)
 								.optional()

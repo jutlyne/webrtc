@@ -13,13 +13,11 @@ import { BlogAnchor } from '@/blog-anchors/entities/blog-anchor.entity';
 
 export class BlogService extends BaseService<Blog> implements IBlogService {
 	protected categoryRepository: Repository<Category>;
-	protected anchorRepository: Repository<BlogAnchor>;
 
 	constructor() {
 		const blogRepository = DataSource.getRepository(Blog);
 		super(blogRepository, BlogDto);
 		this.categoryRepository = DataSource.getRepository(Category);
-		this.anchorRepository = DataSource.getRepository(BlogAnchor);
 	}
 
 	public getListBlogs(conditions: BlogCondtionsInterface): Promise<Blog[]> {
@@ -29,38 +27,56 @@ export class BlogService extends BaseService<Blog> implements IBlogService {
 		});
 	}
 
-	public async createBlog(body: BlogAttributes): Promise<Blog> {
+	public async createBlog(body: BlogAttributes): Promise<any> {
+		const queryRunner = DataSource.createQueryRunner();
+		await queryRunner.connect();
+
 		const categories = await this.categoryRepository.find({
 			where: {
 				id: In([body.categories]),
 			},
 		});
 
-		const blog = await this.create({
-			...body,
-			categories,
-		});
+		await queryRunner.startTransaction();
 
-		for (const anchor of body.anchors) {
-			const parentData = this.anchorRepository.create({
-				title: anchor.title,
-				blog_id: blog.id,
+		try {
+			const blogRepository = queryRunner.manager.getRepository(Blog);
+			const anchorRepository =
+				queryRunner.manager.getRepository(BlogAnchor);
+			const blogData = blogRepository.create({
+				...body,
+				categories,
 			});
+			const blog = await blogRepository.save(blogData);
 
-			const parent = await this.anchorRepository.save(parentData);
-
-			if (!anchor.children) continue;
-
-			for (const children of anchor.children) {
-				const childrenData = this.anchorRepository.create({
-					title: children.title,
+			for (const anchor of body.anchors) {
+				const parentData = anchorRepository.create({
+					title: anchor.title,
+					href: anchor.href,
 					blog_id: blog.id,
-					parent_id: parent.id,
 				});
-				await this.anchorRepository.save(childrenData);
-			}
-		}
 
-		return blog;
+				const parent = await anchorRepository.save(parentData);
+
+				if (!anchor.children) continue;
+
+				for (const children of anchor.children) {
+					const childrenData = anchorRepository.create({
+						title: children.title,
+						href: children.href,
+						blog_id: blog.id,
+						parent_id: parent.id,
+					});
+					await anchorRepository.save(childrenData);
+				}
+			}
+
+			await queryRunner.commitTransaction();
+			return blog;
+		} catch (error) {
+			await queryRunner.rollbackTransaction();
+		} finally {
+			await queryRunner.release();
+		}
 	}
 }
