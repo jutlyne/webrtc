@@ -1,8 +1,11 @@
 import path from 'path';
 import { env } from '@shared/configs';
 import { DataSource, DataSourceOptions } from 'typeorm';
+import connectRedisServer from '@/shared/configs/redis.config';
 
 const config = env.database;
+
+const { pubClient } = connectRedisServer();
 
 export default new DataSource({
 	type: config.dialect,
@@ -15,6 +18,13 @@ export default new DataSource({
 	logging: config.logging,
 	extra: {
 		insecureAuth: true,
+	},
+	cache: {
+		type: 'ioredis',
+		options: pubClient,
+		alwaysEnabled: true,
+		duration: 2000,
+		ignoreErrors: true,
 	},
 	entities: [path.join(__dirname, '../**/entities/*.entity.{ts,js}')],
 	migrations: [path.join(__dirname, '../database/migrations/*.{ts,js}')],

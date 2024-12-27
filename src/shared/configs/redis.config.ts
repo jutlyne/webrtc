@@ -23,4 +23,6 @@ const connectRedisServer = () => {
 	};
 };
 
+export const redis = new Redis({ host: env.redis.host, port: env.redis.port });
+
 export default connectRedisServer;
