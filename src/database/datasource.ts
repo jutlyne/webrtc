@@ -16,6 +16,17 @@ export default new DataSource({
 	extra: {
 		insecureAuth: true,
 	},
+	cache: {
+		type: 'ioredis',
+		options: {
+			socket: {
+				host: env.redis.host,
+				port: env.redis.port,
+			},
+		},
+		alwaysEnabled: true,
+		duration: 2000,
+	},
 	entities: [path.join(__dirname, '../**/entities/*.entity.{ts,js}')],
 	migrations: [path.join(__dirname, '../database/migrations/*.{ts,js}')],
 	seeds: ['src/database/seeders/*{.ts,.js}'],
