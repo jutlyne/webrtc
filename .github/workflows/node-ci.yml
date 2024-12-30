@@ -53,6 +53,8 @@ jobs:
       
       # - name: Run seeder
       #   run: NODE_ENV=testing npm run seed:run
+      - name: Debug Redis Connection
+        run: redis-cli -h redis ping
 
       - name: Run all test jest
         run: npm run test
