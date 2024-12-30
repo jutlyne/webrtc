@@ -94,13 +94,12 @@ class Server {
 
 	public async start(): Promise<void> {
 		try {
-			await databaseLoader.connectToDatabase();
 			this.server.listen(this.app.get('port'), async () => {
 				const { port } = this.server.address() as AddressInfo;
-				console.log(`Server listening on port ${port}`);
-
 				if (env.app.node_env === 'testing') {
 					await verifyServerHealth(port);
+				} else {
+					await databaseLoader.connectToDatabase();
 				}
 			});
 		} catch (error) {

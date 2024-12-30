@@ -1,11 +1,30 @@
 import path from 'path';
 import { env } from '@shared/configs';
 import { DataSource, DataSourceOptions } from 'typeorm';
-import connectRedisServer from '@/shared/configs/redis.config';
+import { redisCacheInstance } from '@/shared/configs/redis.config';
 
 const config = env.database;
 
-const { pubClient } = connectRedisServer();
+const cacheConfig = () => {
+	if (env.app.node_env == 'testing') {
+		return {
+			type: 'database',
+			alwaysEnabled: true,
+			duration: 2000,
+			ignoreErrors: true,
+		};
+	}
+
+	const redisInstance = redisCacheInstance();
+
+	return {
+		type: 'ioredis',
+		options: redisInstance,
+		alwaysEnabled: true,
+		duration: 2000,
+		ignoreErrors: true,
+	};
+};
 
 export default new DataSource({
 	type: config.dialect,
@@ -19,13 +38,7 @@ export default new DataSource({
 	extra: {
 		insecureAuth: true,
 	},
-	cache: {
-		type: 'ioredis',
-		options: pubClient,
-		alwaysEnabled: true,
-		duration: 2000,
-		ignoreErrors: true,
-	},
+	cache: cacheConfig,
 	entities: [path.join(__dirname, '../**/entities/*.entity.{ts,js}')],
 	migrations: [path.join(__dirname, '../database/migrations/*.{ts,js}')],
 	seeds: ['src/database/seeders/*{.ts,.js}'],

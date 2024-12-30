@@ -1,21 +1,23 @@
 import Redis from 'ioredis';
 import { env } from '.';
 
-const connectRedisServer = () => {
-	const pubClient = new Redis({
-		port: env.redis.port,
-		host: env.redis.host,
-	});
-	const subClient = pubClient.duplicate();
-	pubClient.on('error', (err) => {
-		console.error('Redis Pub Client Error:', err);
-		process.exit(1);
-	});
+let redisInstance: Redis | null = null;
 
-	subClient.on('error', (err) => {
-		console.error('Redis Sub Client Error:', err);
-		process.exit(1);
-	});
+export const connectRedisServer = () => {
+	if (!redisInstance) {
+		redisInstance = new Redis({
+			host: env.redis.host,
+			port: env.redis.port,
+		});
+
+		redisInstance.on('error', (err) => {
+			console.error('Redis Client Error:', err);
+		});
+	}
+
+	// Duplicate clients only if necessary
+	const pubClient = redisInstance.duplicate();
+	const subClient = redisInstance.duplicate();
 
 	return {
 		pubClient,
@@ -23,6 +25,28 @@ const connectRedisServer = () => {
 	};
 };
 
-export const redis = new Redis({ host: env.redis.host, port: env.redis.port });
+export const redisCacheInstance = () => {
+	let redisCacheInstance: Redis | null = null;
+
+	if (
+		env.redis.host === env.redis_cache.host &&
+		env.redis.port === env.redis_cache.port
+	) {
+		redisCacheInstance = redisInstance;
+	} else {
+		redisCacheInstance = new Redis({
+			host: env.redis_cache.host,
+			port: env.redis_cache.port,
+		});
+	}
+
+	setInterval(function () {
+		redisCacheInstance?.ping(console.log);
+	}, 1000);
+
+	return redisCacheInstance;
+};
+
+export const redis = redisInstance;
 
 export default connectRedisServer;
