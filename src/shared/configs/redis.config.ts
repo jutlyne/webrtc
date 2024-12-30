@@ -1,26 +1,23 @@
 import Redis from 'ioredis';
 import { env } from '.';
 
-let pubClient: Redis | null = null;
-let subClient: Redis | null = null;
+let redisInstance: Redis | null = null;
 
-const connectRedisServer = () => {
-	if (!pubClient || !subClient) {
-		pubClient = new Redis({
-			port: env.redis.port,
+export const connectRedisServer = () => {
+	if (!redisInstance) {
+		redisInstance = new Redis({
 			host: env.redis.host,
-		});
-		subClient = pubClient.duplicate();
-		pubClient.on('error', (err) => {
-			console.error('Redis Pub Client Error:', err);
-			process.exit(1);
+			port: env.redis.port,
 		});
 
-		subClient.on('error', (err) => {
-			console.error('Redis Sub Client Error:', err);
-			process.exit(1);
+		redisInstance.on('error', (err) => {
+			console.error('Redis Client Error:', err);
 		});
 	}
+
+	// Duplicate clients only if necessary
+	const pubClient = redisInstance.duplicate();
+	const subClient = redisInstance.duplicate();
 
 	return {
 		pubClient,
@@ -28,6 +25,6 @@ const connectRedisServer = () => {
 	};
 };
 
-export const redis = new Redis({ host: env.redis.host, port: env.redis.port });
+export const redis = redisInstance;
 
 export default connectRedisServer;
