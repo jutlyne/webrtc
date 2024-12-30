@@ -50,6 +50,9 @@ jobs:
 
       - name: Run migration
         run: NODE_ENV=testing npm run migration:run
+
+      - name: Show Redis logs
+        run: docker logs $(docker ps -q --filter ancestor=redis)
       
       - name: Run seeder
         run: NODE_ENV=testing npm run seed:run
