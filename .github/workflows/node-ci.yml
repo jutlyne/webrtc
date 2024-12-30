@@ -38,6 +38,13 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
+      redis-cache:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
@@ -51,9 +58,6 @@ jobs:
       - name: Run migration
         run: NODE_ENV=testing npm run migration:run
 
-      - name: Show Redis logs
-        run: docker logs $(docker ps -q --filter ancestor=redis)
-      
       - name: Run seeder
         run: NODE_ENV=testing npm run seed:run
 

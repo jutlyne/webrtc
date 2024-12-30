@@ -66,6 +66,10 @@ export default {
 		host: process.env.REDIS_HOST ?? 'localhost',
 		port: Number(process.env.REDIS_PORT) || 6379,
 	},
+	redis_cache: {
+		host: process.env.REDIS_CACHE_HOST ?? 'localhost',
+		port: Number(process.env.REDIS_CACHE_PORT) || 6379,
+	},
 	url_frontend: process.env.URL_FRONT ?? 'http://localhost:3000/',
 	timezone: process.env.TIMEZONE ?? 'UTC',
 };
