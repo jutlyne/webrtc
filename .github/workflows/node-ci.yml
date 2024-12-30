@@ -48,13 +48,11 @@ jobs:
       - name: Audit npm signatures
         run: npm audit signatures
 
-      # - name: Run migration
-      #   run: NODE_ENV=testing npm run migration:run
+      - name: Run migration
+        run: NODE_ENV=testing npm run migration:run
       
-      # - name: Run seeder
-      #   run: NODE_ENV=testing npm run seed:run
-      - name: Debug Redis Connection
-        run: redis-cli -h redis ping
+      - name: Run seeder
+        run: NODE_ENV=testing npm run seed:run
 
       - name: Run all test jest
         run: npm run test
