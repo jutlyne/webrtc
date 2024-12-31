@@ -10,6 +10,10 @@ import {
 import { In, Repository } from 'typeorm';
 import { Category } from '@/categories/entities/category.entity';
 import { BlogAnchor } from '@/blog-anchors/entities/blog-anchor.entity';
+import { AppError } from '@/shared/utils/errror.util';
+import { HttpStatusCode } from 'axios';
+import { trans } from '@/shared/utils/translation.util';
+import { plainObject } from '@/shared/dto';
 
 export class BlogService extends BaseService<Blog> implements IBlogService {
 	protected categoryRepository: Repository<Category>;
@@ -20,14 +24,31 @@ export class BlogService extends BaseService<Blog> implements IBlogService {
 		this.categoryRepository = DataSource.getRepository(Category);
 	}
 
-	public getListBlogs(conditions: BlogCondtionsInterface): Promise<Blog[]> {
-		return this.repository.find({
-			skip: conditions.skip,
-			take: conditions.limit,
-		});
+	public async getListBlogs(conditions: BlogCondtionsInterface): Promise<{
+		blogs: Blog[];
+		total: number;
+	}> {
+		const total = await this.repository.count();
+		const blogQuery = this.repository
+			.createQueryBuilder('blog')
+			.leftJoinAndSelect('blog.categories', 'category');
+
+		if (conditions.tag) {
+			blogQuery.where('category.id = :id', { id: conditions.tag });
+		}
+
+		const blogs = await blogQuery
+			.skip(conditions.skip)
+			.take(conditions.limit)
+			.getMany();
+
+		return {
+			blogs: plainObject(this.dto, blogs) as unknown as Blog[],
+			total,
+		};
 	}
 
-	public async createBlog(body: BlogAttributes): Promise<any> {
+	public async createBlog(body: BlogAttributes): Promise<Blog | undefined> {
 		const queryRunner = DataSource.createQueryRunner();
 		await queryRunner.connect();
 
@@ -78,5 +99,27 @@ export class BlogService extends BaseService<Blog> implements IBlogService {
 		} finally {
 			await queryRunner.release();
 		}
+	}
+
+	public async getDetail(slug: string): Promise<Blog | null> {
+		const blog = await this.repository
+			.createQueryBuilder('blog')
+			.leftJoinAndSelect('blog.categories', 'category')
+			.leftJoinAndSelect('blog.anchors', 'anchor')
+			.leftJoinAndSelect('anchor.children', 'child')
+			.where({
+				slug,
+				is_displayed: true,
+			})
+			.andWhere('anchor.parent_id IS NULL')
+			.getOne();
+
+		if (!blog) {
+			throw new AppError(
+				trans('not_found', {}, 'errors'),
+				HttpStatusCode.Forbidden,
+			);
+		}
+		return plainObject(this.dto, blog);
 	}
 }

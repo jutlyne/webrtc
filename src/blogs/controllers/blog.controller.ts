@@ -34,12 +34,24 @@ class BlogController
 		try {
 			const body = {
 				...req.body,
+				slug: req.body.title,
 				user_id: res.locals.user.id,
 				image: req.file?.filename,
 			};
 
 			await this.service.createBlog(body);
 			return apiSuccess(res, next, [], trans('success'));
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	public async detail(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { slug } = req.params;
+			const blog = await this.service.getDetail(slug);
+
+			return apiSuccess(res, next, blog, trans('success'));
 		} catch (error) {
 			next(error);
 		}

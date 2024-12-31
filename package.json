@@ -13,7 +13,8 @@
     "seed:create": "node scripts/database-cli.js seed",
     "seed:run": "node scripts/database-cli.js seed-run",
     "typeorm": "typeorm-ts-node-commonjs",
-    "lint": "eslint ./src --fix --ext .ts",
+    "lint": "eslint ./src --ext .ts",
+    "lint:fix": "eslint ./src --fix --ext .ts",
     "dev": "nodemon",
     "test": "jest"
   },

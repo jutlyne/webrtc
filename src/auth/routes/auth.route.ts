@@ -27,6 +27,8 @@ class AuthRoute extends BaseRoutes<IAuthController> {
 			}>(getRefreshTokenSchema()),
 			this.controller.refreshToken,
 		);
+
+		this.router.get('/profile', this.controller.getProfile);
 	}
 }
 

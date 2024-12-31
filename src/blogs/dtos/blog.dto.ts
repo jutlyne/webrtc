@@ -1,9 +1,9 @@
-import { Expose, Transform } from 'class-transformer';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import { BlogAttributes } from '../interfaces/blog.interface';
 import { env } from '@/shared/configs';
 import { UserDto } from '@/users/dtos/user.dto';
-import { BlogAnchor } from '@/blog-anchors/entities/blog-anchor.entity';
-import { Category } from '@/categories/entities/category.entity';
+import { CategoryDto } from '@/categories/dtos/category.dto';
+import { BlogAnchorDto } from '@/blog-anchors/dtos/blog-anchor.dto';
 
 export class BlogDto implements BlogAttributes {
 	@Expose()
@@ -28,7 +28,8 @@ export class BlogDto implements BlogAttributes {
 	@Expose()
 	@Transform(({ value }) => {
 		const regexLink = /^https?:\/\//i;
-		return regexLink.test(value) ? value : env.app.url + value;
+		if (!value) return null;
+		return value && !regexLink.test(value) ? env.app.url + value : value;
 	})
 	image!: string;
 
@@ -45,10 +46,12 @@ export class BlogDto implements BlogAttributes {
 	user!: UserDto;
 
 	@Expose()
-	anchors!: BlogAnchor[];
+	@Type(() => BlogAnchorDto)
+	anchors!: BlogAnchorDto[];
 
 	@Expose()
-	categories!: Category[];
+	@Type(() => CategoryDto)
+	categories!: CategoryDto[];
 
 	@Expose()
 	created_at!: Date;
@@ -56,6 +59,6 @@ export class BlogDto implements BlogAttributes {
 	@Expose()
 	updated_at!: Date;
 
-	@Expose()
+	@Exclude()
 	deleted_at!: Date;
 }

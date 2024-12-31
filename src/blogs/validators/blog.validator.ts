@@ -24,7 +24,6 @@ export const createBlogSchema =
 		return {
 			rules: Joi.object({
 				title: Joi.string().max(200).required().label('Title'),
-				slug: Joi.string().max(200).required().label('Slug'),
 				read_minutes: Joi.number()
 					.integer()
 					.min(0)

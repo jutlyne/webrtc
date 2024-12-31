@@ -25,16 +25,20 @@ export const authMiddleware = (
 		);
 	}
 	try {
-		const decodedToken = jwt.verify(token, secret) as AuthPayload;
-		res.locals.user = decodedToken;
-		next();
+		try {
+			const decodedToken = jwt.verify(token, secret) as AuthPayload;
+			res.locals.user = decodedToken;
+			next();
+		} catch (error) {
+			throw new AppError(String(error));
+		}
 	} catch (error) {
 		next(error);
 	}
 };
 
 const isUnauthenticatePath = (path: string): boolean => {
-	const authRoutePrefixes = ['/auth'];
+	const authRoutePrefixes = ['/auth/login', '/auth/refresh'];
 	const isPathInvalidForAuth = authRoutePrefixes.some((prefix) =>
 		path.startsWith(prefix),
 	);

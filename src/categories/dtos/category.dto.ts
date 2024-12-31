@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { CategoryAttributes } from '../interfaces/category.interface';
 import { BlogDto } from '@/blogs/dtos/blog.dto';
 
@@ -24,6 +24,6 @@ export class CategoryDto implements CategoryAttributes {
 	@Expose()
 	updated_at!: Date;
 
-	@Expose()
+	@Exclude()
 	deleted_at!: Date;
 }

@@ -7,6 +7,7 @@ import {
 	getListBlogSchema,
 } from '../validators/blog.validator';
 import { uploadSingle } from '@/shared/utils/media.util';
+import { getSlug } from '@/shared/validators/base.validator';
 
 class BlogRoute extends BaseRoutes<IBlogController> {
 	constructor() {
@@ -25,6 +26,12 @@ class BlogRoute extends BaseRoutes<IBlogController> {
 			uploadSingle('image', 'images/blogs'),
 			validateBody(createBlogSchema()),
 			this.controller.store,
+		);
+
+		this.router.get(
+			'/:slug',
+			validateBody(getSlug(), 'params'),
+			this.controller.detail,
 		);
 	}
 }

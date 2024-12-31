@@ -45,6 +45,7 @@ const transValidate = (errDetail: ValidationErrorItem): string => {
 
 export function validateBody<T>(
 	validationSchema: ValidationSchemaInterface<T>,
+	type?: 'body' | 'params' | 'query',
 ) {
 	return (req: Request, res: Response, next: NextFunction) => {
 		try {
@@ -52,6 +53,10 @@ export function validateBody<T>(
 			const { rules, messages } = validationSchema;
 			if (req.method == 'POST' || req.method == 'PUT') {
 				dataToValidate = req.body;
+			}
+
+			if (type) {
+				dataToValidate = req[type];
 			}
 
 			const { error } = rules.validate(dataToValidate, {
@@ -71,4 +76,41 @@ export function validateBody<T>(
 			next(error);
 		}
 	};
+}
+
+export async function validateAsync<T>(
+	validationSchema: ValidationSchemaInterface<T>,
+	type?: 'body' | 'params' | 'query',
+) {
+	return async (req: Request, res: Response, next: NextFunction) => {
+		try {
+			let dataToValidate = req.query;
+			const { rules, messages } = validationSchema;
+			if (req.method == 'POST' || req.method == 'PUT') {
+				dataToValidate = req.body;
+			}
+
+			if (type) {
+				dataToValidate = req[type];
+			}
+
+			await rules.validateAsync(dataToValidate, {
+				messages,
+				abortEarly: true,
+			});
+
+			return next();
+		} catch (error: any) {
+			handleValidationError(error, next);
+		}
+	};
+}
+
+function handleValidationError(error: any, next: NextFunction) {
+	try {
+		const errorMessage = transValidate(error.details[0]);
+		throw new AppError(errorMessage, HttpStatusCode.BadRequest);
+	} catch (err) {
+		next(err);
+	}
 }
