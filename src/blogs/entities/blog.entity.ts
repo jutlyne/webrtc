@@ -12,7 +12,7 @@ import {
 	OneToMany,
 } from 'typeorm';
 import { BlogAttributes } from '../interfaces/blog.interface';
-import _ from 'lodash';
+import { generateIdFromText } from '@/shared/utils/string.util';
 
 @Entity('blogs')
 export class Blog extends BaseEntities implements BlogAttributes {
@@ -28,7 +28,7 @@ export class Blog extends BaseEntities implements BlogAttributes {
 		nullable: false,
 		transformer: {
 			to: function (value: string) {
-				return _.kebabCase(value);
+				return generateIdFromText(value);
 			},
 			from: function (value: string) {
 				return value;
