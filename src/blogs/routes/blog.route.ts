@@ -33,6 +33,13 @@ class BlogRoute extends BaseRoutes<IBlogController> {
 			validateBody(getSlug(), 'params'),
 			this.controller.detail,
 		);
+
+		this.router.post(
+			'/:blogId',
+			uploadSingle('image', 'images/blogs'),
+			// validateBody(createBlogSchema()),
+			this.controller.update,
+		);
 	}
 }
 

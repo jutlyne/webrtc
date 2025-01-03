@@ -6,6 +6,7 @@ import { BlogService } from '../services/blog.service';
 import { BlogCondtionsInterface } from '../interfaces/blog.interface';
 import { apiSuccess } from '@/shared/utils/response.util';
 import { trans } from '@/shared/utils/translation.util';
+import { generateIdFromText } from '@/shared/utils/string.util';
 
 class BlogController
 	extends BaseController<IBlogService>
@@ -52,6 +53,33 @@ class BlogController
 			const blog = await this.service.getDetail(slug);
 
 			return apiSuccess(res, next, blog, trans('success'));
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	public async update(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { blogId } = req.params;
+			const body = {
+				...req.body,
+				user_id: res.locals.user.id,
+			};
+
+			if (req.body.title) {
+				body.slug = generateIdFromText(req.body.title);
+			}
+
+			if (req.file?.filename) {
+				body.image = req.file.filename;
+			}
+
+			const updatedBlog = await this.service.updateBlog(
+				Number(blogId),
+				body,
+			);
+
+			return apiSuccess(res, next, updatedBlog, trans('success'));
 		} catch (error) {
 			next(error);
 		}

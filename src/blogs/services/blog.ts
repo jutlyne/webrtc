@@ -12,4 +12,5 @@ export interface IBlogService extends IBaseService<Blog> {
 		total: number;
 	}>;
 	getDetail(slug: string): Promise<Blog | null>;
+	updateBlog(blogId: number, body: BlogAttributes): Promise<Blog | undefined>;
 }
