@@ -1,7 +1,7 @@
 import { Blog } from '@/blogs/entities/blog.entity';
 import { BaseEntities } from '@/shared/entities/base.entity';
 import { Column, Entity, ManyToMany } from 'typeorm';
-import _ from 'lodash';
+import { generateIdFromText } from '@/shared/utils/string.util';
 
 @Entity('categories')
 export class Category extends BaseEntities {
@@ -14,7 +14,7 @@ export class Category extends BaseEntities {
 		nullable: false,
 		transformer: {
 			to: function (value: string) {
-				return _.kebabCase(value);
+				return generateIdFromText(value);
 			},
 			from: function (value: string) {
 				return value;

@@ -40,7 +40,7 @@ class AuthController
 				...loggedUser,
 				expires: expiresIn,
 				access_token: token,
-				refreshToken,
+				refresh_token: refreshToken,
 			};
 
 			return apiSuccess(res, next, response, trans('success'));
@@ -84,6 +84,21 @@ class AuthController
 				},
 				trans('success'),
 			);
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	public async getProfile(
+		req: Request,
+		res: Response,
+		next: NextFunction,
+	): Promise<void> {
+		try {
+			const user = res.locals.user;
+			const profile = await this.service.find(user.id);
+
+			return apiSuccess(res, next, profile, trans('success'));
 		} catch (error) {
 			next(error);
 		}

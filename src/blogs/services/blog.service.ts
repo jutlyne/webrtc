@@ -10,6 +10,11 @@ import {
 import { In, Repository } from 'typeorm';
 import { Category } from '@/categories/entities/category.entity';
 import { BlogAnchor } from '@/blog-anchors/entities/blog-anchor.entity';
+import { AppError } from '@/shared/utils/errror.util';
+import { HttpStatusCode } from 'axios';
+import { trans } from '@/shared/utils/translation.util';
+import { plainObject } from '@/shared/dto';
+import { removeFileInStorage } from '@/shared/utils/media.util';
 
 export class BlogService extends BaseService<Blog> implements IBlogService {
 	protected categoryRepository: Repository<Category>;
@@ -20,14 +25,31 @@ export class BlogService extends BaseService<Blog> implements IBlogService {
 		this.categoryRepository = DataSource.getRepository(Category);
 	}
 
-	public getListBlogs(conditions: BlogCondtionsInterface): Promise<Blog[]> {
-		return this.repository.find({
-			skip: conditions.skip,
-			take: conditions.limit,
-		});
+	public async getListBlogs(conditions: BlogCondtionsInterface): Promise<{
+		blogs: Blog[];
+		total: number;
+	}> {
+		const total = await this.repository.count();
+		const blogQuery = this.repository
+			.createQueryBuilder('blog')
+			.leftJoinAndSelect('blog.categories', 'category');
+
+		if (conditions.tag) {
+			blogQuery.where('category.id = :id', { id: conditions.tag });
+		}
+
+		const blogs = await blogQuery
+			.skip(conditions.skip)
+			.take(conditions.limit)
+			.getMany();
+
+		return {
+			blogs: plainObject(this.dto, blogs) as unknown as Blog[],
+			total,
+		};
 	}
 
-	public async createBlog(body: BlogAttributes): Promise<any> {
+	public async createBlog(body: BlogAttributes): Promise<Blog | undefined> {
 		const queryRunner = DataSource.createQueryRunner();
 		await queryRunner.connect();
 
@@ -74,6 +96,106 @@ export class BlogService extends BaseService<Blog> implements IBlogService {
 			await queryRunner.commitTransaction();
 			return blog;
 		} catch (error) {
+			await queryRunner.rollbackTransaction();
+		} finally {
+			await queryRunner.release();
+		}
+	}
+
+	public async getDetail(slug: string): Promise<Blog | null> {
+		const blog = await this.repository
+			.createQueryBuilder('blog')
+			.leftJoinAndSelect('blog.categories', 'category')
+			.leftJoinAndSelect('blog.anchors', 'anchor')
+			.leftJoinAndSelect('anchor.children', 'child')
+			.where({
+				slug,
+				is_displayed: true,
+			})
+			.andWhere('anchor.parent_id IS NULL')
+			.getOne();
+
+		if (!blog) {
+			throw new AppError(
+				trans('not_found', {}, 'errors'),
+				HttpStatusCode.Forbidden,
+			);
+		}
+		return plainObject(this.dto, blog);
+	}
+
+	public async updateBlog(
+		blogId: number,
+		body: BlogAttributes,
+	): Promise<Blog | undefined> {
+		const queryRunner = DataSource.createQueryRunner();
+		await queryRunner.connect();
+
+		const categories = await this.categoryRepository.find({
+			where: {
+				id: In(body.categories),
+			},
+		});
+
+		await queryRunner.startTransaction();
+
+		try {
+			const blogRepository = queryRunner.manager.getRepository(Blog);
+			const anchorRepository =
+				queryRunner.manager.getRepository(BlogAnchor);
+
+			const existingBlog = await blogRepository.findOne({
+				where: { id: blogId },
+			});
+
+			if (!existingBlog) {
+				throw new AppError(
+					trans('not_found', {}, 'errors'),
+					HttpStatusCode.Forbidden,
+				);
+			}
+			const currentImage = existingBlog.image;
+
+			const updatedBlogData = blogRepository.merge(existingBlog, {
+				...body,
+				categories,
+			});
+			await blogRepository.save(updatedBlogData);
+
+			if (body.anchors?.length) {
+				await anchorRepository.delete({ blog_id: blogId });
+
+				for (const anchor of body.anchors) {
+					const parentData = anchorRepository.create({
+						title: anchor.title,
+						href: anchor.href,
+						blog_id: blogId,
+					});
+
+					const parent = await anchorRepository.save(parentData);
+
+					if (!anchor.children) continue;
+
+					for (const children of anchor.children) {
+						const childrenData = anchorRepository.create({
+							title: children.title,
+							href: children.href,
+							blog_id: blogId,
+							parent_id: parent.id,
+						});
+						await anchorRepository.save(childrenData);
+					}
+				}
+			}
+
+			await queryRunner.commitTransaction();
+			if (body.image) {
+				removeFileInStorage(currentImage);
+			}
+
+			return existingBlog;
+		} catch (error) {
+			console.error(error);
 			await queryRunner.rollbackTransaction();
 		} finally {
 			await queryRunner.release();

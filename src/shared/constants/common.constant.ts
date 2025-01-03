@@ -12,4 +12,6 @@ export enum Image {
 	MAXSIZE = 5000000,
 }
 
+export const maxPageSize = 15;
+
 export const categories = ['PHP', 'NodeJs', 'VueJs', 'AWS', 'CICD', 'Life'];

@@ -16,3 +16,17 @@ export const generateRandom = (length: number, chars?: string): string => {
 export const isTrueSet = (boolString: string): boolean => {
 	return boolString?.toLowerCase?.() === 'true';
 };
+
+export const removeVietnameseTones = (str: string) => {
+	str = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+	str = str.replace(/đ/g, 'd').replace(/Đ/g, 'D');
+	return str;
+};
+
+export const generateIdFromText = (text: string) => {
+	return removeVietnameseTones(text)
+		.toLowerCase()
+		.replace(/[^\w\s-]/g, '')
+		.trim()
+		.replace(/\s+/g, '-');
+};

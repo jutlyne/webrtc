@@ -6,6 +6,11 @@ import {
 } from '../interfaces/blog.interface';
 
 export interface IBlogService extends IBaseService<Blog> {
-	createBlog(body: BlogAttributes): Promise<Blog>;
-	getListBlogs(conditions: BlogCondtionsInterface): Promise<Blog[]>;
+	createBlog(body: BlogAttributes): Promise<Blog | undefined>;
+	getListBlogs(conditions: BlogCondtionsInterface): Promise<{
+		blogs: Blog[];
+		total: number;
+	}>;
+	getDetail(slug: string): Promise<Blog | null>;
+	updateBlog(blogId: number, body: BlogAttributes): Promise<Blog | undefined>;
 }

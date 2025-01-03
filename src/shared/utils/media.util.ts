@@ -3,6 +3,7 @@ import multer, { Multer } from 'multer';
 import { Request } from 'express';
 import { Image } from '@/shared/constants/common.constant';
 import { trans } from './translation.util';
+import { existsSync, unlinkSync } from 'fs';
 
 const MAXSIZE = Image.MAXSIZE;
 
@@ -49,4 +50,14 @@ export const uploadSingle = (input: string, path: string) => {
 
 export const formData = () => {
 	return multer().none();
+};
+
+export const removeFileInStorage = (filePath?: string): void => {
+	if (!filePath) return;
+
+	const fullPath = path.resolve(process.cwd(), 'public', filePath);
+
+	if (existsSync(fullPath)) {
+		unlinkSync(fullPath);
+	}
 };
