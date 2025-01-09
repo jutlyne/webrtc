@@ -15,3 +15,16 @@ export const getSlug = (): ValidationSchemaInterface<{
 		},
 	};
 };
+
+export const getId = (): ValidationSchemaInterface<{
+	id: number;
+}> => {
+	return {
+		rules: Joi.object<{ id: number }>({
+			id: Joi.number().required(),
+		}),
+		messages: {
+			'any.required': 'required',
+		},
+	};
+};

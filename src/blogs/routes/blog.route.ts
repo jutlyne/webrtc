@@ -7,7 +7,7 @@ import {
 	getListBlogSchema,
 } from '../validators/blog.validator';
 import { uploadSingle } from '@/shared/utils/media.util';
-import { getSlug } from '@/shared/validators/base.validator';
+import { getId, getSlug } from '@/shared/validators/base.validator';
 
 class BlogRoute extends BaseRoutes<IBlogController> {
 	constructor() {
@@ -35,10 +35,17 @@ class BlogRoute extends BaseRoutes<IBlogController> {
 		);
 
 		this.router.post(
-			'/:blogId',
+			'/:id',
 			uploadSingle('image', 'images/blogs'),
-			// validateBody(createBlogSchema()),
+			validateBody(getId(), 'params'),
+			validateBody(createBlogSchema(false)),
 			this.controller.update,
+		);
+
+		this.router.delete(
+			'/:id',
+			validateBody(getId(), 'params'),
+			this.controller.delete,
 		);
 	}
 }

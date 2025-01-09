@@ -60,7 +60,7 @@ class BlogController
 
 	public async update(req: Request, res: Response, next: NextFunction) {
 		try {
-			const { blogId } = req.params;
+			const { id } = req.params;
 			const body = {
 				...req.body,
 				user_id: res.locals.user.id,
@@ -74,12 +74,20 @@ class BlogController
 				body.image = req.file.filename;
 			}
 
-			const updatedBlog = await this.service.updateBlog(
-				Number(blogId),
-				body,
-			);
+			const updatedBlog = await this.service.updateBlog(Number(id), body);
 
 			return apiSuccess(res, next, updatedBlog, trans('success'));
+		} catch (error) {
+			next(error);
+		}
+	}
+
+	public async delete(req: Request, res: Response, next: NextFunction) {
+		try {
+			const { id } = req.params;
+			const result = await this.service.delete({ id: Number(id) });
+
+			return apiSuccess(res, next, result, trans('success'));
 		} catch (error) {
 			next(error);
 		}
